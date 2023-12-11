@@ -1,9 +1,8 @@
 from datetime import datetime, timedelta
 from typing import Annotated
 from fastapi.param_functions import Form
-from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
+from jose import jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
 from config import JWT_SECRET_KEY, HASHING_ALGORYTHM
@@ -74,23 +73,19 @@ def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def get_password_hash(password):
-    return pwd_context.hash(password)
-
-
-def get_user(db, servername: str):
+def get_server(db, servername: str):
     if servername in db:
         user_dict = db[servername]
         return ServerInDB(**user_dict)
 
 
 def authenticate_server(fake_db, servername: str, password: str):
-    user = get_user(fake_db, servername)
-    if not user:
+    server = get_server(fake_db, servername)
+    if not server:
         return False
-    if not verify_password(password, user.hashed_password):
+    if not verify_password(password, server.hashed_password):
         return False
-    return user
+    return server
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
@@ -102,31 +97,3 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, algorithm=HASHING_ALGORYTHM)
     return encoded_jwt
-
-
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[HASHING_ALGORYTHM])
-        username: str = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-        token_data = TokenData(username=username)
-    except JWTError:
-        raise credentials_exception
-    user = get_user(Servers_workers, servername=token_data.username)
-    if user is None:
-        raise credentials_exception
-    return user
-
-
-async def get_current_active_user(
-    current_user: Annotated[Server, Depends(get_current_user)]
-):
-    if current_user.disabled:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    return current_user

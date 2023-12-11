@@ -11,10 +11,10 @@ from config import SERVER_HOST, SERVER_PORT
 
 def main():
     logger.remove()
-    logger.add("logs/debug_{time}.log", rotation="00:00", compression="zip", enqueue=True)
+    logger.add("logs/debug_{time}.log", rotation="00:00", compression="zip", enqueue=True, colorize=True)
     logger.info("Start of application")
 
-    logger.level("API", no=110, color="<blue>", icon="")
+    logger.level("API", no=110, color="<blue>")
     uvicorn.run(app, host=SERVER_HOST, port=SERVER_PORT)
 
 
