@@ -4,7 +4,7 @@ from fastapi.param_functions import Form
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-from passlib.context import CryptContext    
+from passlib.context import CryptContext
 from pydantic import BaseModel
 from config import JWT_SECRET_KEY, HASHING_ALGORYTHM
 
@@ -20,8 +20,9 @@ Servers_workers = {
 
 
 class Token(BaseModel):
-    access_token: str
-    token_type: str
+    access_token: str | None = None
+    token_type: str | None = None
+    error: str | None = None
 
 
 class TokenData(BaseModel):
