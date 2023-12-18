@@ -1,0 +1,4 @@
+.idea/
+Server_router/.env
+Server_router/logs/
+Server_router/__pycache__
