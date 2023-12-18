@@ -1,9 +1,9 @@
 from pydantic import BaseModel
 from starlette.requests import Request
 from config import ACCESS_TOKEN_EXPIRE_MINUTES
-from auth import create_access_token, authenticate_server, Token, Servers_workers, OAuth2PasswordRequestFormCustom
+from auth import create_access_token, authenticate_server, Token, Servers_workers, OAuth2PasswordRequestFormServer
 from datetime import timedelta
-from fastapi import Depends, FastAPI, HTTPException, status, APIRouter
+from fastapi import Depends, FastAPI, HTTPException, status
 from typing import Annotated
 from slowapi.errors import RateLimitExceeded
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -45,9 +45,9 @@ async def return_less_loaded_worker(request: Request):
 #
 
 
-@app.post("/token", response_model=Token)
+@app.post("/token_for_worker", response_model=Token)
 @limiter.limit("5/minute")
-async def login_for_access_token(request: Request, form_data: Annotated[OAuth2PasswordRequestFormCustom, Depends()]):
+async def login_for_access_token(request: Request, form_data: Annotated[OAuth2PasswordRequestFormServer, Depends()]):
     server = authenticate_server(Servers_workers, form_data.servername, form_data.password)
     if not server:
         raise HTTPException(

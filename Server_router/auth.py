@@ -42,7 +42,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-class OAuth2PasswordRequestFormCustom:
+class OAuth2PasswordRequestFormServer:
     def __init__(
         self,
         *,
