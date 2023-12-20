@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from config import DATABASE_HOST, DATABASE_PASSWORD, DATABASE_USER, DATABASE_NAME, DATABASE_PORT
 from exceptions import UsernameTaken, NoRecipient, NoMessages, NoUser
+import datetime
 
 
 ENGINE = create_async_engine(
@@ -40,7 +41,7 @@ async def new_message(author: str, recipient: str, message_text: str):
         if user is None:
             raise NoRecipient(f"No user with username {recipient} found.")
         else:
-            await session.execute(text("INSERT INTO messages (author, recipient, text, time) VALUES ((SELECT id FROM users WHERE username = :author), (SELECT id FROM users WHERE username = :recipient), :message_text, :current_time)"), {"author": author, "recipient": recipient, "message_text": message_text, "current_time": func.now()})
+            await session.execute(text("INSERT INTO messages (author, recipient, text, time) VALUES ((SELECT id FROM users WHERE username = :author), (SELECT id FROM users WHERE username = :recipient), :message_text, :current_time)"), {"author": author, "recipient": recipient, "message_text": message_text, "current_time": datetime.datetime.utcnow()})
             await session.commit()
 
 
@@ -51,7 +52,7 @@ async def new_user(username: str, hashed_password: str):
         if user is not None:
             raise UsernameTaken(f"Username {username} is already taken.")
         else:
-            await session.execute(text("INSERT INTO users (username, hashed_password, registered_at) VALUES (:username, :hashed_password, :current_time)"), {"username": username, "hashed_password": hashed_password, "current_time": func.now()})
+            await session.execute(text("INSERT INTO users (username, hashed_password, registered_at) VALUES (:username, :hashed_password, :current_time)"), {"username": username, "hashed_password": hashed_password, "current_time": datetime.datetime.utcnow()})
             await session.commit()
 
 
