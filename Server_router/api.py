@@ -38,24 +38,3 @@ async def return_less_loaded_worker(request: Request):
         return {"status": 200, "address": Active_workers[0][0], "port": Active_workers[0][1]}
     else:
         return {"status": 200, "error": "No servers are available now"}
-
-
-#
-# Worker server to router server
-#
-
-
-@app.post("/token_for_worker", response_model=Token)
-@limiter.limit("5/minute")
-async def login_for_access_token(request: Request, form_data: Annotated[OAuth2PasswordRequestFormServer, Depends()]):
-    server = authenticate_server(Servers_workers, form_data.servername, form_data.password)
-    if not server:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect servername or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(data={"sub": server.servername}, expires_delta=access_token_expires)
-    Active_workers.append((form_data.working_ip, form_data.working_port))
-    return {"access_token": access_token, "token_type": "bearer"}
