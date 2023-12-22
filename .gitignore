@@ -9,3 +9,6 @@ Server_worker/__pycache__
 Server_worker/migrations/__pycache__/
 Server_worker/models/__pycache__/
 Server_worker/migrations/versions/__pycache__/
+
+Client/.env
+Client/__pycache__
