@@ -2,10 +2,11 @@ from datetime import datetime, timedelta
 from typing import Annotated
 from fastapi import Depends, HTTPException, status
 from fastapi.param_functions import Form
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 from pydantic import BaseModel
+
+from Server_worker.hashing import verify_password
 from config import JWT_SECRET_KEY, HASHING_ALGORYTHM
 from database import get_user_by_username
 
@@ -45,17 +46,7 @@ class UserInDB(User):
     hashed_password: str
 
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-
-async def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
-
-
-async def get_password_hash(password):
-    return pwd_context.hash(password)
 
 
 async def get_user(username: str):

@@ -1,8 +1,8 @@
 #
 # Run this to start the server
 #
-import asyncio
-from loadup import update_connected
+
+
 from loguru import logger
 import uvicorn
 from api import app
