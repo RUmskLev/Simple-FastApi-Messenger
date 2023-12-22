@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from Server_worker.hashing import get_password_hash
 from config import DATABASE_HOST, DATABASE_PASSWORD, DATABASE_USER, DATABASE_NAME, DATABASE_PORT
 from exceptions import UsernameTaken, NoMessages, NoUser, MessageInsertionError, HashMismatchError
+from exceptions import UsernameTaken, NoRecipient, NoMessages, NoUser
 import datetime
 
 
@@ -47,10 +48,13 @@ async def get_last_messages(user_username: str, provided_hash: str):
 
 async def new_message(author: str, recipient: str, message_text: str):
     async with AsyncSessionLocal() as session:
-        result = await session.execute(text("INSERT INTO messages (author, recipient, text, time) VALUES ((SELECT id FROM users WHERE username = :author), (SELECT id FROM users WHERE username = :recipient), :message_text, :current_time) RETURNING id"), {"author": author, "recipient": recipient, "message_text": message_text, "current_time": datetime.datetime.utcnow()})
-        message_id = result.fetchone()[0]
-        if message_id is None:
-            raise MessageInsertionError()
+        result = await session.execute(text("SELECT * FROM users WHERE username = :username"), {"username": recipient})
+        user = result.fetchone()
+        if user is None:
+            raise NoRecipient(f"No user with username {recipient} found.")
+        else:
+            await session.execute(text("INSERT INTO messages (author, recipient, text, time) VALUES ((SELECT id FROM users WHERE username = :author), (SELECT id FROM users WHERE username = :recipient), :message_text, :current_time)"), {"author": author, "recipient": recipient, "message_text": message_text, "current_time": datetime.datetime.utcnow()})
+            await session.commit()
 
 
 async def new_user(username: str, hashed_password: str):
