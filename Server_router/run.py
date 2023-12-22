@@ -15,7 +15,7 @@ def main():
     logger.info("Start of application")
 
     logger.level("API", no=110, color="<blue>")
-    uvicorn.run(app, host=SERVER_HOST, port=SERVER_PORT, loop="asyncio")
+    uvicorn.run(app, host=SERVER_HOST, port=SERVER_PORT)
 
 
 if __name__ == '__main__':

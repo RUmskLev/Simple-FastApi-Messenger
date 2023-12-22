@@ -1,15 +1,16 @@
 from pydantic import BaseModel
 from starlette.requests import Request
-from Server_worker.exceptions import NoMessages, UsernameTaken, NoRecipient
+from Server_worker.exceptions import NoMessages, UsernameTaken, NoRecipient, HashMismatchError
+from Server_worker.hashing import get_password_hash
 from config import ACCESS_TOKEN_EXPIRE_MINUTES
-from auth import create_access_token, Token, User, get_current_active_user, authenticate_user, get_password_hash, OAuth2PasswordRequestFormUser
+from auth import create_access_token, Token, User, get_current_active_user, authenticate_user, OAuth2PasswordRequestFormUser
 from datetime import timedelta
 from fastapi import Depends, FastAPI, HTTPException, status
 from typing import Annotated
 from slowapi.errors import RateLimitExceeded
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
-from database import get_all_messages, new_message, new_user, get_last_message
+from database import get_all_messages, new_message, new_user, get_last_messages
 from loadup import ConnectedUser, get_users_amount
 
 
@@ -99,16 +100,19 @@ async def message_history(
 
 
 @app.get("/check_for_updates", response_model=LastMessageModel)
+@limiter.limit("1/second")
 async def check_for_updates(
     request: Request,
-    current_user: Annotated[User, Depends(get_current_active_user)]
+    current_user: Annotated[User, Depends(get_current_active_user)],
+    last_message_hash: str
 ):
     try:
-        last_message = await get_last_message(current_user.username)
-        last_message_serialized = "|".join(str(last_message[i]) for i in range(4))
+        last_messages = await get_last_messages(current_user.username, last_message_hash)
     except NoMessages:
         return {"result": "error", "error": "No messages found"}
-    return {"result": "success", "last_message_hash": await get_password_hash(last_message_serialized)}
+    except HashMismatchError:
+        return {"result": "error", "error": "update your local messages base"}
+    return {"result": "success", "last_messages": [tuple(mes) for mes in last_messages]}
 
 
 @app.post("/register", response_model=BoolResponseModel)

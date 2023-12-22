@@ -21,4 +21,5 @@ users = Table(
     Column("username", String, nullable=False),
     Column("hashed_password", String, nullable=False),
     Column("registered_at", TIMESTAMP, default=datetime.utcnow),
+    Column("last_received", Integer, ForeignKey("messages.id")),
 )
