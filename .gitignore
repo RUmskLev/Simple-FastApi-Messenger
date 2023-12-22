@@ -2,10 +2,3 @@
 Server_router/.env
 Server_router/logs/
 Server_router/__pycache__
-
-Server_worker/.env
-Server_worker/logs/
-Server_worker/__pycache__
-Server_worker/migrations/__pycache__/
-Server_worker/models/__pycache__/
-Server_worker/migrations/versions/__pycache__/
