@@ -66,14 +66,14 @@ async def get_updates(token, last_message_hash: str):
             text = await response.text()
             data = await response.json()
 
-            if data["result"] == "error":
+            if data.get("result", "") == "error":
                 if data["error"] == "No messages found":
                     print("No messages found for this user.")
                 elif data["error"] == "No updates":
                     print("No updates")
             else:
-                print("Messages:", data["messages"])
-                return data["messages"]
+                print("Messages:", data.get("messages", "messages"))
+                return data.get("messages", "messages")
 
 
 async def get_history(token):
@@ -88,11 +88,11 @@ async def get_history(token):
     async with aiohttp.ClientSession() as session:
         async with session.get(url, headers=headers) as response:
             data = await response.json()
-            if data["result"] == "error":
+            if data.get("result", "") == "error":
                 print(data["error"])
                 return {"error": data["error"]}
             else:
-                return data["messages"]
+                return data.get("messages", [])
 
 
 async def new_message(recipient_username: str, message_text: str, token: str):
