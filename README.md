@@ -1,4 +1,4 @@
-# FastApi based messenger
+# FastApi based messenger ![Version Badge](https://img.shields.io/badge/Demo-0.1.0-informational?logo=&style=flat-square&logoColor=333333&color=666666&labelColor=999999)
 ![MIT licence badge](https://img.shields.io/badge/License-MIT-blue.svg)
 
 ## Simple fully asynchronous messenger that uses FastApi + PostgreSQL and has graphical client
@@ -10,7 +10,8 @@
 ![SQLAlchemy Badge](https://img.shields.io/badge/SQLAlchemy-D71F00?logo=sqlalchemy&logoColor=fff&style=plastic)
 
 ### Tested on:
-![Debian Badge](https://img.shields.io/badge/Debian-A81D33?logo=debian&logoColor=fff&style=plastic)
+![Debian 11 Badge](https://img.shields.io/badge/Debian-11-informational?logo=debian&style=flat&logoColor=be5666&color=ffffff&labelColor=a81d33)
+![Debian 12 Badge](https://img.shields.io/badge/Debian-12-informational?logo=debian&style=flat&logoColor=be5666&color=ffffff&labelColor=a81d33)
 
 This is system of servers, that work together and do specific tasks:
 

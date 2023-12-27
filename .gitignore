@@ -11,4 +11,4 @@ Server_worker/models/__pycache__/
 Server_worker/migrations/versions/__pycache__/
 
 Client/.env
-Client/__pycache__
+Client/__pycache__/
