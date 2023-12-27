@@ -1,4 +1,4 @@
-# FastApi based messenger ![Version Badge](https://img.shields.io/badge/Version-0.1.0-informational?logo=&style=flat-square&logoColor=333333&color=666666&labelColor=999999)
+# FastApi based messenger ![Version Badge](https://img.shields.io/badge/Version-1.0.0-informational?logo=&style=flat-square&logoColor=333333&color=666666&labelColor=999999)
 ![MIT licence badge](https://img.shields.io/badge/License-MIT-blue.svg)
 
 ## Simple fully asynchronous messenger that uses FastApi + PostgreSQL and has graphical client
